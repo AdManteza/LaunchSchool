@@ -1,0 +1,25 @@
+Calculates Monthly Payment:
+
+a.)Asks for the Annual Percentage Rate(APR)
+	-Checks for valid input. It should be in percentage
+	-Saves the value as apr_rate
+
+b.)Calculates for the monthly interest rate
+	-monthly_interest_rate = (apr_rate / 12)/100
+
+b.)Asks for the total loan amount
+	-Checks for a valid input. It should be a whole number.
+	-Coverts it into a float.
+	-Saves the value as loan_amount
+
+c.)Asks for the loan duration
+	-Checks for a valid input. It should be in years.
+	-Converts it into the equivalent value in months.
+	-Saves the value as loan_duration_months.
+
+d.)Calculates the monthly payment by using the formula:
+	monthly_payment = loan_amount * (monthly_interest_rate / 
+	(1 - (1 + monthly_interest_rate) ** -loan_duration_months))
+
+e.)Displays the monthly payment.
+

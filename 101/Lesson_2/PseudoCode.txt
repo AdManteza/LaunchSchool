@@ -1,0 +1,108 @@
+1.) A method that returns the sum of two integers:
+
+		Casual:
+
+		Get the integers.
+			-Save the first integer value as integer1.
+			-Save the second integer value as integer2.
+
+		Add the two integers(integer1 and integer2) and save the 
+		result as result_value.
+
+		Display the result.
+
+		Formal:
+
+		START
+
+		SET integer1 = first integer
+		SET integer2 = second integer
+		SET result_value = integer1 + integer2
+
+		DISPLAY result_value
+
+		END
+
+2.) A method that takes an aray of strings, and returns a string that is all
+		those strings concatenated together.
+
+		Casual:
+
+		Given a collection of strings.
+		
+		a.) Iterate through the collection one by one.
+				- At first iteration, save the string as concatenated_string.
+					
+					At each subsequent iteration:
+					 - Add the current string value to the value saved in concatenated_string.
+					 - Save the combined strings as concatenated_string. 
+
+		b.) Display the last value of concatenated_string 
+
+		Formal:
+
+		START
+
+		Given a collection of strings
+
+		SET iterator = 1
+		SET concatenated_string = string value within string collection at space 1
+
+		WHILE iterator < length of string collection
+
+			SET concatenated_string = concatenated_string plus string value within string collection at space "iterator"
+
+			iterator = iterator + 1
+
+		PRINT concatenated_string
+
+		END
+
+3.) A method that takes an array of integers, and returns a new array with
+		every other element
+
+		Casual:
+
+		Given an array of integers.
+
+		Iterate through the array one by one.
+			- Check each iteration value if it is odd or even.
+				- If iteration value is even, move to the next value in the array.
+				- If iteration value is odd, save the value for that iteration into a new array.
+
+		Display the new array.
+
+		Formal:
+
+		START
+
+		Given an array of integers.
+
+		SET array = an array of inetegers
+		SET iterator = 0
+		SET new_array
+
+		WHILE iterator < length of array
+
+			IF iterator is odd
+				SET new _array = value of current iterator within the array
+			ELSE
+				go to next iteration
+
+			END
+
+		PRINT new_array
+
+
+
+
+
+
+
+
+
+
+
+
+
+
