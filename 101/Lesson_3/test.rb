@@ -1,10 +1,10 @@
 def test(num)
-	num = num + "three"
+	num.gsub!("two","one")
 end
 
-number_outside = "two"
+num = "two"
 
 
-test(number_outside)
+test(num)
 
-puts number_outside
+puts num
