@@ -7,6 +7,8 @@ WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]]              # diagonals
 
+WINNING_SCORE = 5
+
 player_score = 0
 computer_score = 0
 
@@ -62,9 +64,7 @@ end
 
 def find_at_risk_square(line, board, marker)
   if board.values_at(*line).count(marker) == 2
-    board.select { |k,v| line.include?(k) && v == INITIAL_MARKER }.keys.first    
-  else
-    nil
+    board.select { |key, value| line.include?(key) && value == INITIAL_MARKER }.keys.first
   end
 end
 
@@ -75,7 +75,7 @@ def computer_places_piece!(brd)
     square = find_at_risk_square(line, brd, COMPUTER_MARKER)
     break if square
   end
-  
+
   if !square
     WINNING_LINES.each do |line|
       square = find_at_risk_square(line, brd, PLAYER_MARKER)
@@ -83,12 +83,10 @@ def computer_places_piece!(brd)
     end
   end
 
-  square = 5 if brd[5] == INITIAL_MARKER
-    
-  if !square
-    square = empty_squares(brd).sample
-  end
-  
+  square = 5 if brd[5] == INITIAL_MARKER && !square
+
+  square = empty_squares(brd).sample if !square
+
   brd[square] = COMPUTER_MARKER
 end
 
@@ -110,6 +108,10 @@ def announce_winner(player_score, computer_score)
   prompt("Sorry!! You have lost this round!!") if computer_score == 5
 end
 
+def all_equal?(array)
+  array.uniq.size <= 1
+end
+
 def detect_winner(brd)
   WINNING_LINES.each do |line|
     if brd[line[0]] == PLAYER_MARKER &&
@@ -125,13 +127,11 @@ def detect_winner(brd)
   nil
 end
 
-def choose_initial_turn
-  system 'clear'
-
+def get_user_input(message)
   answer = ''
 
-  loop do  
-    prompt "Would you like to make the first move? y/n"  
+  loop do
+    prompt message
     answer = gets.chomp.downcase
     break if answer == 'y' || answer == 'n'
     prompt "Sorry, that's not a valid choice."
@@ -161,7 +161,8 @@ end
 loop do
   board = initialize_board
 
-  initial_turn = choose_initial_turn
+  system 'clear'
+  initial_turn = get_user_input("Would you like to make the first move? y/n")
   current_player = choose_current_player(initial_turn)
 
   loop do
@@ -171,7 +172,7 @@ loop do
     current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
-  
+
   display_board(board)
 
   if someone_won?(board)
@@ -183,15 +184,13 @@ loop do
     prompt "It's a tie!"
   end
 
-  if player_score == 5 || computer_score == 5
+  if player_score == WINNING_SCORE || computer_score == WINNING_SCORE
     announce_winner(player_score, computer_score)
     player_score = 0
     computer_score = 0
   end
 
-  prompt "Play again? (y or n)"
-  answer = gets.chomp
-  break if answer.downcase.start_with?('n')
+  break if get_user_input("Play again? (y or n)") == 'n'
 end
 
 prompt "Thanks for Playing"
