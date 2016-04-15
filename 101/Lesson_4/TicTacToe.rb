@@ -1,11 +1,11 @@
 require 'pry'
 
-PLAYER_MARKER = 'X'
-COMPUTER_MARKER = 'O'
-INITIAL_MARKER = ' '
+PLAYER_MARKER = 'X'.freeze
+COMPUTER_MARKER = 'O'.freeze
+INITIAL_MARKER = ' '.freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
-                [[1, 5, 9], [3, 5, 7]]              # diagonals
+                [[1, 5, 9], [3, 5, 7]].freeze # diagonals
 
 WINNING_SCORE = 5
 
@@ -68,6 +68,11 @@ def find_at_risk_square(line, board, marker)
   end
 end
 
+def choose_regular_square(brd)
+  return 5 if brd[5] == INITIAL_MARKER
+  empty_squares(brd).sample
+end
+
 def computer_places_piece!(brd)
   square = nil
 
@@ -83,9 +88,7 @@ def computer_places_piece!(brd)
     end
   end
 
-  square = 5 if brd[5] == INITIAL_MARKER && !square
-
-  square = empty_squares(brd).sample if !square
+  square = choose_regular_square(brd) if !square
 
   brd[square] = COMPUTER_MARKER
 end
@@ -108,19 +111,17 @@ def announce_winner(player_score, computer_score)
   prompt("Sorry!! You have lost this round!!") if computer_score == 5
 end
 
-def all_equal?(array)
-  array.uniq.size <= 1
+def line_winner?(line, marker, brd)
+  brd[line[0]] == marker &&
+    brd[line[1]] == marker &&
+    brd[line[2]] == marker
 end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    if brd[line[0]] == PLAYER_MARKER &&
-       brd[line[1]] == PLAYER_MARKER &&
-       brd[line[2]] == PLAYER_MARKER
+    if line_winner?(line, PLAYER_MARKER, brd)
       return 'Player'
-    elsif brd[line[0]] == COMPUTER_MARKER &&
-          brd[line[1]] == COMPUTER_MARKER &&
-          brd[line[2]] == COMPUTER_MARKER
+    elsif line_winner?(line, COMPUTER_MARKER, brd)
       return 'Computer'
     end
   end
