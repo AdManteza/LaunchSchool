@@ -32,12 +32,12 @@ def initialize_deck
   SUITS.product(VALUES).shuffle
 end
 
-def get_valid_choice(message, param1, param2)
+def get_valid_choice(message, valid_choices)
   choice = ''
   loop do
     prompt message
     choice = gets.chomp.downcase
-    break if choice == param1 || choice == param2
+    break if choice == valid_choices[0] || choice == valid_choices[1]
     prompt "Sorry, that's not a valid choice."
   end
   choice
@@ -121,7 +121,8 @@ end
 
 def play_again?
   puts "--------------------"
-  answer = get_valid_choice("Do you want to play again? y/n", 'y', 'n')
+  valid_choices = ['y', 'n']
+  answer = get_valid_choice("Do you want to play again? y/n", valid_choices)
   return true if answer == 'y'
 end
 
@@ -167,7 +168,8 @@ loop do
   # player turn:
 
   loop do
-    player_turn = get_valid_choice("Would you like to (h)it or (s)tay?", 'h', 's')
+    valid_choices = ['h', 's']
+    player_turn = get_valid_choice("Would you like to (h)it or (s)tay?", valid_choices)
 
     if player_turn == 'h'
       player_cards << deck.shuffle.pop
