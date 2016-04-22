@@ -14,7 +14,15 @@ VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Ace',
 
 SUITS = ['Clubs', 'Diamonds', 'Hearts', 'Spades'].freeze
 
-# cards = [['H', '3'], ['S', 'Q']]
+DEALER_STAY_AT_VALUE = 17
+
+WINNING_CARD_TOTAL = 21
+
+WINNING_ROUND_SCORE = 5
+
+player_score = 0
+
+dealer_score = 0
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -60,30 +68,30 @@ def total(cards)
   end
 
   count_number_of_aces(values).times do
-    sum -= 10 if sum > 21
+    sum -= 10 if sum > WINNING_CARD_TOTAL
   end
 
   sum
 end
 
 def busted?(cards)
-  total(cards) > 21
+  total(cards) > WINNING_CARD_TOTAL
 end
 
 def detect_result(dealer_cards, player_cards)
   player_total = total(player_cards)
   dealer_total = total(dealer_cards)
 
-  if player_total > 21
+  if player_total > WINNING_CARD_TOTAL
     :player_busted
-  elsif dealer_total > 21
+  elsif dealer_total > WINNING_CARD_TOTAL
     :dealer_busted
   elsif dealer_total < player_total
     :player
   elsif dealer_total > player_total
-    :dealer_cards
+    :dealer
   else
-    tie
+    :tie
   end
 end
 
@@ -104,16 +112,44 @@ def display_result(dealer_cards, player_cards)
   end
 end
 
+def display_grand_output(dealer_cards, player_cards)
+  puts "====================================================================="
+  prompt "Dealer has #{dealer_cards}, for a total of: #{total(dealer_cards)}"
+  prompt "Player has #{player_cards}, for a total of: #{total(player_cards)}"
+  puts "====================================================================="
+end
+
 def play_again?
   puts "--------------------"
   answer = get_valid_choice("Do you want to play again? y/n", 'y', 'n')
   return true if answer == 'y'
 end
 
+def display_scores(player_score, dealer_score)
+  prompt "Player score = #{player_score}"
+  prompt "Dealer score = #{dealer_score}"
+
+  announce_winner_of_round(player_score, dealer_score)
+end
+
+def announce_winner_of_round(player_score, dealer_score)
+  prompt("Congratulations!! You have won this round!!") if player_score == WINNING_ROUND_SCORE
+  prompt("Sorry!! You have lost this round!!") if dealer_score == WINNING_ROUND_SCORE
+end
+
+def end_of_previous_round(player_score, dealer_score)
+  player_score == WINNING_ROUND_SCORE || dealer_score == WINNING_ROUND_SCORE
+end
+
 loop do
   prompt "Welcome to the card game Twenty-One!!!"
 
   deck = initialize_deck
+
+  if end_of_previous_round(player_score, dealer_score)
+    player_score = 0
+    dealer_score = 0
+  end
 
   player_cards = []
   dealer_cards = []
@@ -123,57 +159,71 @@ loop do
     dealer_cards << deck.shuffle.pop
   end
 
+  player_card_total = total(player_cards)
+
   prompt "Dealer has #{dealer_cards[0]} and ?"
-  prompt "You have: #{player_cards[0]} and #{player_cards[1]}, for a total of #{total(player_cards)}."
+  prompt "You have: #{player_cards[0]} and #{player_cards[1]}, for a total of #{player_card_total}."
 
   # player turn:
-  loop do
-    # player_turn = ''
 
+  loop do
     player_turn = get_valid_choice("Would you like to (h)it or (s)tay?", 'h', 's')
 
     if player_turn == 'h'
       player_cards << deck.shuffle.pop
+      player_card_total = total(player_cards)
       prompt "You chose to hit!"
-      prompt "Your cards are now: #{player_cards}, for a total of #{total(player_cards)}"
+      prompt "Your cards are now: #{player_cards}, for a total of #{player_card_total}"
     end
 
     break if player_turn == 's' || busted?(player_cards)
   end
 
   if busted?(player_cards)
+    display_grand_output(dealer_cards, player_cards)
     display_result(dealer_cards, player_cards)
+    dealer_score += 1
+    display_scores(player_score, dealer_score)
     play_again? ? next : break
   else
-    prompt "You stayed at #{total(player_cards)}"
+    prompt "You stayed at #{player_card_total}"
   end
 
   # dealer turn
   prompt "Dealer turn..."
 
+  dealer_card_total = total(dealer_cards)
+
   loop do
-    break if busted?(dealer_cards) || total(dealer_cards) >= 17
+    break if busted?(dealer_cards) || dealer_card_total >= DEALER_STAY_AT_VALUE
 
     prompt "Dealer hits!"
     dealer_cards << deck.shuffle.pop
+    dealer_card_total = total(dealer_cards)
     prompt "Dealer's cards are now #{dealer_cards}"
-    prompt "Dealer total is now: #{total(dealer_cards)}"
+    prompt "Dealer total is now: #{dealer_card_total}"
   end
 
   if busted?(dealer_cards)
-    prompt "Dealer total is now: #{total(dealer_cards)}"
+    display_grand_output(dealer_cards, player_cards)
     display_result(dealer_cards, player_cards)
+    player_score += 1
+    display_scores(player_score, dealer_score)
     play_again? ? next : break
   else
-    prompt "Dealer stays at #{total(dealer_cards)}"
+    prompt "Dealer stays at #{dealer_card_total}"
   end
 
-  puts "=============="
-  prompt "Dealer has #{dealer_cards}, for a total of: #{total(dealer_cards)}"
-  prompt "Player has #{player_cards}, for a total of: #{total(player_cards)}"
-  puts "=============="
+  display_grand_output(dealer_cards, player_cards)
 
   display_result(dealer_cards, player_cards)
+
+  result = detect_result(dealer_cards, player_cards)
+
+  player_score += 1 if result == :player || result == :tie
+  dealer_score += 1 if result == :dealer || result == :tie
+
+  display_scores(player_score, dealer_score)
 
   break unless play_again?
 end
