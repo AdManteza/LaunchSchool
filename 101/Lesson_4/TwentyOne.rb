@@ -1,4 +1,3 @@
-require 'pry'
 # PseudoCode
 # 1. Initialize deck
 # 2. Deal cards to player and dealer
@@ -58,13 +57,13 @@ def total(cards)
   sum = 0
 
   values.each do |value|
-    if value == 'Ace'
-      sum += 11
-    elsif value.to_i == 0
-      sum += 10
-    else
-      sum += value.to_i
-    end
+    sum += if value == 'Ace'
+             11
+           elsif value.to_i == 0
+             10
+           else
+             value.to_i
+           end
   end
 
   count_number_of_aces(values).times do
